@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: paymentproxy0 
+spec:
+  replicas: 1
+  selector:
+    app: paymentproxy0
+  template:
+    metadata:
+      labels:
+        app: paymentproxy0 
+    spec:
+      containers:
+      - name: paymentproxy0 
+        image: 192.168.50.206:5000/ubuntuforgolang:v4
+        imagePullPolicy: IfNotPresent 
+        ports:
+        -
+          containerPort: 8090
+        command: ["/home/workspace/regnet-tools/run.sh"]
+        args: ["master","paymentproxy","0"]
+        volumeMounts:
+        - name: nfs-storage
+          mountPath: /home/workspace
+      volumes:
+        - name: nfs-storage
+          nfs:
+            server: 192.168.50.206
+            path: /home/nfs

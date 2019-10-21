@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: bootstrap0 
+  labels:
+    app: bootstrap0
+spec:
+  selector:
+    app: bootstrap0
+  clusterIP: 10.96.200.205
+  ports:
+  - port: 8020 
+    targetPort: 8020
+    name: bootstrap0-p1
+  - port: 18020 
+    targetPort: 18020 
+    name: bootstrap0-p2 

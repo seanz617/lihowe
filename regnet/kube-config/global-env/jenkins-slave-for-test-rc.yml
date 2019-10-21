@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: jenkins-slave-for-test
+spec:
+  replicas: 1
+  selector:
+    app: jenkins-slave-for-test
+  template:
+    metadata:
+      labels:
+        app: jenkins-slave-for-test 
+    spec:
+      nodeSelector:
+        app: vm-node-230
+      containers:
+      - name: jenkins-slave-for-test 
+        image: 192.168.50.206:5000/ubuntuforjenkinsslave:v1
+        imagePullPolicy: IfNotPresent
+        command: ["/home/workspace/run.sh"]
+        args: ["test","jenkins"]
+        ports:
+        - 
+          containerPort: 22
+          containerPort: 2379
+          containerPort: 8080
+        volumeMounts:
+        - name: node-storage
+          mountPath: /home/workspace
+      volumes:
+        - name: node-storage
+          hostPath:
+            path: /home

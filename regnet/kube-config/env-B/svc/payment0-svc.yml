@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: paymentproxy0 
+  labels:
+    app: paymentproxy0
+spec:
+  selector:
+    app: paymentproxy0
+  clusterIP: 10.96.200.211
+  ports:
+  - port: 8090 
+    targetPort: 8090
+    name: paymentproxy0-p1

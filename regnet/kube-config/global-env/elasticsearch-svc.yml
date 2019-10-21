@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: elasticsearch 
+  labels:
+    app: elasticsearch 
+spec:
+  selector:
+    app: elasticsearch 
+  type: NodePort
+  ports:
+  - port: 9200 
+    targetPort: 9200 
+    nodePort: 31920 
+    name: es-p1 
+  - port: 9300 
+    targetPort: 9300 
+    nodePort: 31930 
+    name: es-p2 

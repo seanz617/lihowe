@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: logstash 
+spec:
+  replicas: 1
+  selector:
+    app: logstash 
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      nodeSelector:
+        app: vm-node-238 
+      containers:
+      - name: logstash 
+        image: 192.168.50.206:5000/logstash
+        imagePullPolicy: IfNotPresent
+        args: ["-f","/config-dir/logstash.conf"]
+        ports:
+        - 
+          containerPort: 5000
+          protocol: UDP 
+        volumeMounts:
+        - name: nfs-storage
+          mountPath: /config-dir
+      volumes:
+        - name: nfs-storage
+          nfs:
+            server: 192.168.50.206
+            path: /home/nfs/regnet-config/elk

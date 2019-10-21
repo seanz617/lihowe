@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: gateway0 
+  labels:
+    app: gateway0
+spec:
+  selector:
+    app: gateway0
+  clusterIP: 10.96.200.213
+  ports:
+  - port: 8070 
+    targetPort: 8070
+    name: gateway0-p1
+  - port: 18070 
+    targetPort: 18070 
+    name: gateway0-p2 

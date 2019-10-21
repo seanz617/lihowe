@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: indexer0 
+  labels:
+    app: indexer0 
+spec:
+  selector:
+    app: indexer0
+  clusterIP: 10.96.200.207
+  ports:
+  - port: 8030 
+    targetPort: 8030
+    name: indexer0-p1
+  - port: 18030 
+    targetPort: 18030 
+    name: indexer0-p2 

@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: gppio 
+  labels:
+    app: gppio 
+spec:
+  selector:
+    app: gppio
+  clusterIP: 10.96.200.201
+  ports:
+  - port: 8880
+    targetPort: 8880
+    nodePort:
+    name: p1
+  - port: 8884 
+    targetPort: 8884
+    name: p2
+  - port: 8885 
+    targetPort: 8885
+    name: p3
+  - port: 8680 
+    targetPort: 8680
+    name: p4
+  - port: 8684 
+    targetPort: 8684
+    name: p5
+  - port: 8685 
+    targetPort: 8685
+    name: p6
+  - port: 8888 
+    targetPort: 8888
+    name: p7
+  - port: 8086 
+    targetPort: 8086
+    name: p8
+  - port: 18780 
+    targetPort: 18780
+    name: p9
+  - port: 18784 
+    targetPort: 18784
+    name: p10
+  - port: 18785 
+    targetPort: 18785
+    name: p11
+  - port: 28780 
+    targetPort: 28780
+    name: p12
+  - port: 28784 
+    targetPort: 28784
+    name: p13
+  - port: 28785 
+    targetPort: 28785
+    name: p14
+  - port: 38780 
+    targetPort: 38780
+    name: p15
+  - port: 38784 
+    targetPort: 38784
+    name: p16
+  - port: 38785 
+    targetPort: 38785
+    name: p17

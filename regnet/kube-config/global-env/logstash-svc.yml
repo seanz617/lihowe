@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: logstash 
+  labels:
+    app: logstash 
+spec:
+  selector:
+    app: logstash 
+  type: NodePort
+  ports:
+  - port: 5000 
+    targetPort: 5000 
+    nodePort: 31500 
+    protocol: UDP
+    name: logstash-p1 

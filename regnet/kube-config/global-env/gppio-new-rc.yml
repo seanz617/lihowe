@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: gppio
+spec:
+  replicas: 1
+  selector:
+    app: gppio 
+  template:
+    metadata:
+      labels:
+        app: gppio
+    spec:
+      nodeSelector:
+        app: vm-node-236 
+      containers:
+      - name: normal 
+        image: 192.168.50.206:5000/ubuntuforgolang:v1
+        imagePullPolicy: Always 
+        ports:
+        - 
+          containerPort: 8880
+          containerPort: 8884
+          containerPort: 8885
+          containerPort: 8086
+          
+          containerPort: 8680
+          containerPort: 8684
+          containerPort: 8685
+          containerPort: 8888
+          containerPort: 8086
+
+          containerPort: 8086
+          containerPort: 18780
+          containerPort: 18784
+          containerPort: 18785
+          
+          containerPort: 8086
+          containerPort: 28780
+          containerPort: 28784
+          containerPort: 28785
+          
+          containerPort: 8086
+          containerPort: 38780
+          containerPort: 38784
+          containerPort: 38785
+        command: ["/home/workspace/regnet-tools/run.sh"]
+        args: ["master","gppio","0"]
+        volumeMounts:
+        - name: nfs-storage
+          mountPath: /home/workspace
+      volumes:
+        - name: nfs-storage
+          nfs:
+            server: 192.168.50.206
+            path: /home/nfs

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: jenkins-slave-for-test 
+  labels:
+    app: jenkins-slave-for-test 
+spec:
+  selector:
+    app: jenkins-slave-for-test 
+  clusterIP: 10.96.200.216
+  ports:
+  - port: 22 
+    targetPort: 22 
+    name: jenkins-slave-for-test-p1 
+  - port: 2379
+    targetPort: 2379
+    name: jenkins-slave-for-test-p2 
+  - port: 8080
+    targetPort: 8080
+    name: jenkins-slave-for-test-p3 

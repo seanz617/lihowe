@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: verifier0 
+  labels:
+    app: verifier0 
+spec:
+  selector:
+    app: verifier0 
+  clusterIP: 10.96.200.209
+  ports:
+  - port: 8010 
+    targetPort: 8010
+    name: verifier0-p1
+  - port: 18010 
+    targetPort: 18010 
+    name: verifier0-p2 

@@ -1,0 +1,25 @@
+{
+    "Redis": {
+        "Addr": "localhost:6379",
+        "DB": 0,
+        "Password": ""
+    },
+    "Service": {
+        "Net": {
+            "BindIP": "0.0.0.0",
+            "TCPPort": 8031,
+            "UDPPort": 8031,
+            "Debug": true
+        },
+        "RPCHost": "127.0.0.1",
+        "RPCPort": 18031
+    },
+    "Center": {
+        "Name": "Center_0",
+        "PeerIDBase58": "16Uiu2HAmSmkThUDMjW3hTNNtWTUF9Jc6sHbfTsVn5RFM3mnoTwSr",
+        "IP": "127.0.0.1",
+        "UDPPort": 8010,
+        "TCPPort": 8010,
+        "HTTPPort": 0
+    }
+}

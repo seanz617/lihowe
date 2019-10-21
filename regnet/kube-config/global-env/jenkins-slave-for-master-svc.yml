@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: jenkins-slave-for-master 
+  labels:
+    app: jenkins-slave-for-master
+spec:
+  selector:
+    app: jenkins-slave-for-master
+  clusterIP: 10.96.200.215
+  ports:
+  - port: 22 
+    targetPort: 22 
+    name: jenkins-slave-for-master-p1 
+  - port: 2379
+    targetPort: 2379
+    name: jenkins-slave-for-master-p2 
+  - port: 8080
+    targetPort: 8080
+    name: jenkins-slave-for-master-p3 

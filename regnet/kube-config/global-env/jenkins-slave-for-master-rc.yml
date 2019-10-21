@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: jenkins-slave-for-master
+spec:
+  replicas: 1
+  selector:
+    app: jenkins-slave-for-master
+  template:
+    metadata:
+      labels:
+        app: jenkins-slave-for-master
+    spec:
+      containers:
+      - name: jenkins-slave-for-master
+        image: 192.168.50.206:5000/ubuntuforjenkinsslave:v1
+        imagePullPolicy: IfNotPresent
+        command: ["/home/workspace/regnet-tools/run.sh"]
+        args: ["master","jenkins"]
+        ports:
+        - 
+          containerPort: 22
+          containerPort: 2379
+          containerPort: 8080
+        volumeMounts:
+        - name: nfs-storage
+          mountPath: /home/workspace
+      volumes:
+        - name: nfs-storage
+          nfs:
+            server: 192.168.50.206
+            path: /home/nfs

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: indexer0 
+spec:
+  replicas: 1
+  selector:
+    app: indexer0
+  template:
+    metadata:
+      labels:
+        app: indexer0
+    spec:
+      nodeSelector:
+        app: vm-node-236 
+      containers:
+      - name: indexer0 
+        image: 192.168.50.206:5000/ubuntuforgolang:v4
+        imagePullPolicy: Always 
+        ports:
+        -
+          containerPort: 8030
+          containerPort: 18030
+        command: ["/home/workspace/regnet-tools/run.sh"]
+        args: ["master","indexer","0"]
+        volumeMounts:
+        - name: nfs-storage
+          mountPath: /home/workspace
+      volumes:
+        - name: nfs-storage
+          nfs:
+            server: 192.168.50.206
+            path: /home/nfs

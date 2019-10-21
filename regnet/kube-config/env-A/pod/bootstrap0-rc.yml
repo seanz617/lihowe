@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: bootstrap0
+spec:
+  replicas: 1
+  selector:
+    app: bootstrap0 
+  template:
+    metadata:
+      labels:
+        app: bootstrap0 
+    spec:
+      containers:
+      - name: bootstrap0 
+        image: 192.168.50.206:5000/ubuntuforgolang:v4
+        imagePullPolicy: Always 
+        ports:
+        -
+          containerPort: 8020
+          containerPort: 18020
+        command: ["/home/workspace/regnet-tools/run.sh"]
+        args: ["master","bootstrap","0"]
+        volumeMounts:
+        - name: nfs-storage
+          mountPath: /home/workspace
+      volumes:
+        - name: nfs-storage
+          nfs:
+            server: 192.168.50.206
+            path: /home/nfs
