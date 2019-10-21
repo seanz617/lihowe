@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Log Manager</title>
+
+    <link rel='stylesheet' type='text/css' href='static/css/style.css' />
+
+    <style type="text/css">
+        #flot-placeholder{width:350px;height:300px;}
+    </style>
+
+    <script type="application/javascript" src="static/js/jquery-3.3.1.min.js"></script>
+
+    <script type="application/javascript">
+        $(function(){
+            add_accounts.onclick = function() {
+                var accounts = $('#accounts').val();
+                if(accounts == "") {
+                    alert("accounts can't empty")
+                } else {
+                    var params = {
+                        "accounts":accounts
+                    };
+                    $.get("/addaccounts",params,function(data,status) {
+                    });
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="nav-wrap">
+        <ul class="group" id="example-one">
+            <li><a class="current_page_item" href="/storage">存储</a></li>
+            <li><a href="/logmanager">日志</a></li>
+        </ul>
+    </div>
+
+    <div>
+        <table style="width:100%;margin-top: 5px;margin-left: 10px">
+            <tr>
+                <td>
+                    <textarea id="accounts" style="width:90%;height:100px"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button id="add_accounts">add accounts</button>
+                </td>
+            </tr>
+        </table>
+
+        <table style="width:100%;margin-top: 10px;margin-left: 10px">
+            <tr>
+                <td width="15%"><u><b>add time</b></u></td>
+                <td width="40%"><u><b>account</b></u></td>
+                <td width="15%"><u><b>upload time</b></u></td>
+                <td width="20%"><u><b>download address</b></u></td>
+            </tr>
+            {% for item in log_list %}
+            <tr>
+                <td width="15%">{{ item.add_time }}</td>
+                <td width="40%">{{ item.account }}</td>
+                <td width="15%">{{ item.upload_time }}</td>
+                <td width="10%"><a href="{{ item.url }}" >{{ item.linkname }}</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

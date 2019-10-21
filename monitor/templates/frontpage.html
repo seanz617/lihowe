@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+	
+    <title>ppio monitor</title>
+	
+    <link rel='stylesheet' type='text/css' href='static/css/style.css' />
+
+    <style type="text/css">
+        #flot-placeholder{width:350px;height:300px;}       
+    </style>
+	
+    <script language="javascript" type="text/javascript" src="static/js/flot/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="static/js/flot/jquery.flot.min.js"></script>
+    <script language="javascript" type="text/javascript" src="static/js/flot/jquery.flot.pie.js"></script>
+    <script language="javascript" type="text/javascript" src="static/js/flot/jquery.flot.time.js"></script>
+    <script language="javascript" type="text/javascript" src="static/js/flot/jquery.flot.symbol.js"></script>
+
+    <script type='text/javascript' src='static/js/jquery.color-RGBa-patch.js'></script>
+
+    <script type='text/javascript'>
+
+        function fold_summary(name) {
+            var id = "#" + name
+            if($(id).is(":hidden")){
+                $(id).show();
+            }else{
+                $(id).hide();
+            }
+        }
+        
+        $("#nodes_online_count").hover(function(){
+            $("#nodes_online_count").css("background-color","#F2F2F2");
+        },function(){
+            $("#nodes_online_count").css("background-color","white");
+        });  
+
+        $(function(){
+        	var nodes = [    
+			{ label: "节点数", data: eval('{{ c_n_n }}')  ,color: '#F08080' },
+			{ label: "在线节点数", data: eval('{{ o_n_n }}') , color: '#1E90FF'}
+                ];   
+        	$.plot($("#nodes_online_count"), nodes, {
+               		series: {   
+                    		bars: {   
+                        		show: true   
+                    		}   
+                	},   
+                	bars: {   
+                        align: "center",
+                        barWidth: 0.6,
+                        horizontal: true,
+                        lineWidth: 0,
+                        fillColor: { colors: [{ opacity: 0.3 }, { opacity: 1}] },
+                	},   
+                	xaxis: {   
+                        show: true,
+                        tickSize: 1,
+				        tickLength: 0,
+                        axisLabelUseCanvas: true,
+                        axisLabelFontSizePixels: 12,
+                        axisLabelFontFamily: 'Verdana, Arial',
+                        axisLabelPadding: 10,
+				        max: 20,
+                	},   
+                	yaxis: {   
+                        show: true,
+                        ticks: [[0,'miners'],[1,'centers'],[2,'indexers'],[3,"verifiers"], [4,'bootstraps']],
+                        tickSize: 1,
+				        tickLength: 0,
+                        axisLabelUseCanvas: true,
+                        axisLabelFontSizePixels: 12,
+                        axisLabelFontFamily: 'Verdana, Arial',
+                        axisLabelPadding: 10
+                	},
+                    grid: {
+                        hoverable: false,
+                        borderWidth: 0,
+                        borderColor: "#FFFFFF",
+                        backgroundColor: { colors: ["#ffffff", "#FFFFFF"] }
+                    },
+            	});
+    	});
+
+        {% for node_info in n_i_s.miners %}     
+	    $(function() {
+                var data = [
+                    {% if node_info.status=='online'%}
+                        { label: "used",  data: {{ node_info.total_space }} - {{ node_info.left_space }}, color: "#EEC900"},
+                        { label: "free",  data: {{ node_info.left_space }}, color: "#63B8FF"},
+                    {% else %}
+                        { label: "used",  data: {{ node_info.total_space }} - {{ node_info.left_space }}, color: "#919191"},
+                        { label: "free",  data: {{ node_info.left_space }}, color: "#BDBDBD"},
+                    {% endif %}
+            ];
+            var pie_options = {
+                series: {
+                    pie: {
+                        show: true,
+                        radius: 1,
+                        innerRadius: 0.8,
+                        label: {
+                            show: true,
+                            radius: 3 / 4,
+                            formatter: function (label, series) {
+                                return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                            },
+                            threshold: 0.03,
+                            background: {
+                                opacity: 0.5
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    show: false
+                }
+            };
+	        $.plot("#{{ node_info.name }}_pie", data, pie_options);
+        });
+	{% endfor %}    
+    </script>
+</head>
+
+<body>
+    <div class="nav-wrap">
+        <ul class="group" id="example-one">
+            <li><a class="current_page_item" href="/storage">存储</a></li>
+            <li><a href="/logmanager">日志</a></li>
+            <li><a href="/net">网络</a></li>
+            <li><a href="/logout">退出</a></li>
+        </ul>
+    </div>
+
+    <div style="width:96%;height:120px;text-align:center;margin:10px">
+            <div id="nodes_online_count" style="width:100%;height:100%;" onclick='fold_summary("summary")'></div>
+    </div>
+
+    <div id="summary" style="display:None;width:100%;border:0px solid #000000;margin-top:10px; color:#000000">
+        <table style="width: 100%" align="left" width="100%" border=0px cellspacing="0">
+            {% for c in n_i_s.centers %}     
+                <tr>
+                   <td width=160px> {{ c.name }} </td> 
+                   <td> indexer num: {{ c.data.indexers }} verifier num: {{ c.data.verifiers }}</td>
+                </tr>
+            {% endfor %}
+            {% for b in n_i_s.bootstraps %}     
+                <tr>
+                   <td width=160px> {{ b.name }} </td> 
+                   <td> indexer num: {{ b.data.indexers }} verifier num: {{ b.data.verifiers }}</td>
+                </tr>
+            {% endfor %}
+            {% for i in n_i_s.indexers %}     
+                <tr>
+                    <td width=160px> {{ i.name }} </td> 
+                    <td> indexing miner num: {{ i.miner_count }} </td> 
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    {% for node_info in n_i_s.miners %}
+        <div id="{{ node_info.name }}"_block style="width:100%;height:230px;border:0px solid #000000;margin-top:10px;color:#000000">
+            <div style="float:left;width:30%;height:160px;text-align:left;margin:5px;outline-width:5px; margin-right: 0px;padding-right: 0px;vertical-align: middle;display: table-cell;font-size:10px">
+                <table id="{{ node_info.name }}_tab" border="0" style="width: 100%">
+                    <tr>
+                        <td width=100px><strong>{{ node_info.name }}</strong></td>
+                	{% if node_info.status=='online' %}
+                            <td><strong>{{ node_info.status }}</strong></td>
+                        {% else %}
+                            <td bgcolor="#cd5c5c"><strong>{{ node_info.status }}</strong></td>
+                        {% endif %}
+                	{% if node_info.indexing=='indexing' %}
+                            <td><strong>{{ node_info.indexing }}</strong></td>
+                        {% else %}
+                            <td bgcolor="#cd5c5c"><strong>{{ node_info.indexing }}</strong></td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>{{ node_info.data.account }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>{{ node_info.version }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>{{ node_info.data.startTime }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>finishedJobs</strong></td>
+                        <td>{{ node_info.data.transfer.jobs.finishedJobs }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>pendingJobs</strong></td>
+                        {% if node_info.data.transfer.jobs.pendingJobs > 0 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.transfer.jobs.pendingJobs }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.transfer.jobs.pendingJobs }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>runningJobs</strong></td>
+                        {% if node_info.data.transfer.jobs.runningJobs > 200 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.transfer.jobs.runningJobs }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.transfer.jobs.runningJobs }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>getJobs</strong></td>
+                        <td>{{ node_info.data.transfer.jobs.getJobs }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>total crash count</strong></td>
+                        <td>{{ node_info.crash }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="float:left;width:15%;height:160px;text-align:center;margin:10px">
+                <div id="{{ node_info.name }}_pie" style="width:100%;height:100%;"></div>
+            </div>
+
+            <div style="float:left;width:15%;height:160px;text-align:center;margin:10px;outline-width:10px;vertical-align: middle;display: table-cell;font-size:10px">
+                <table id="{{ node_info.name }}_proof_tab" border="0" style="width: 100%">
+                    <thead class="table_head">
+                        <tr>
+                            <th bgcolor="#1E90FF" colspan="3"><strong>PROOFS</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th></th>
+                        <th><strong>Challenge</strong></th>
+                        <th><strong>Failed</strong></th>
+                    </tr>
+                    <tr>
+                        <td><strong>LPoc: </strong></td>
+                        <td>{{ node_info.data.stats.Proofs.LPoC.ChallengeTimes }}</td>
+                        {% if node_info.data.stats.Proofs.LPoC.FailedTimes > 0 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.stats.Proofs.LPoC.FailedTimes }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.stats.Proofs.LPoC.FailedTimes }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>PoRep: </strong></td>
+                        <td>{{ node_info.data.stats.Proofs.PoRep.ChallengeTimes }}</td>
+                        {% if node_info.data.stats.Proofs.PoRep.FailedTimes > 0 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.stats.Proofs.PoRep.FailedTimes }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.stats.Proofs.PoRep.FailedTimes }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>PoST: </strong></td>
+                        <td>{{ node_info.data.stats.Proofs.PoST.ChallengeTimes }}</td>
+                        {% if node_info.data.stats.Proofs.PoST.FailedTimes > 0 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.stats.Proofs.PoST.FailedTimes }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.stats.Proofs.PoST.FailedTimes }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>PoMD: </strong></td>
+                        <td>{{ node_info.data.stats.Proofs.PoMD.ChallengeTimes }}</td>
+                        {% if node_info.data.stats.Proofs.PoMD.FailedTimes > 0 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.stats.Proofs.PoMD.FailedTimes }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.stats.Proofs.PoMD.FailedTimes }}</td>
+                        {% endif %}
+                    </tr>
+                    </tbody>
+            </table>
+            
+            <table id="{{ node_info.name }}_cache_tab" border="0" style="width: 100%">
+                    <thead class="table_head">
+                        <tr>
+                            <th bgcolor="#1E90FF" colspan="2"><strong>CACHE</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><strong>totalChunkCount: </strong></td>
+                        <td>{{ node_info.data.cache.totalChunkCount }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>cachedChunkCount: </strong></td>
+                        <td>{{ node_info.data.cache.cachedChunkCount }}</td>
+                    </tr>
+                    </tbody>
+            </table>
+            </div>
+            <div style="float:left;width:15%;height:160px;text-align:center;margin:10px;outline-width:10px;vertical-align: middle;display: table-cell;font-size:10px">
+                <table id="{{ node_info.name }}_overlay_tab" border="0" style="width: 100%">
+                    <thead class="table_head">
+                        <tr>
+                            <th bgcolor="#1E90FF" colspan="2"><strong>OVERLAY</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><strong>DialTimes: </strong></td>
+                        <td>{{ node_info.data.stats.Overlay.DialTimes }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SucceededDialTimes</strong></td>
+                        <td>{{ node_info.data.stats.Overlay.SucceededDialTimes }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TotalPeerCount</strong></td>
+                        <td>{{ node_info.data.stats.Overlay.TotalPeerCount }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ConnectedPeerCount</strong></td>
+                        <td>{{ node_info.data.stats.Overlay.ConnectedPeerCount }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DownloadSpeed</strong></td>
+                        <td>{{ node_info.data.stats.Overlay.DownloadSpeed }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UploadSpeed</strong></td>
+                        <td>{{ node_info.data.stats.Overlay.UploadSpeed }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MaxDownloadSpeed</strong></td>
+                        <td>{{ node_info.data.stats.Overlay.MaxDownloadSpeed }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MaxUploadSpeed</strong></td>
+                        <td>{{ node_info.data.stats.Overlay.MaxUploadSpeed }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TotalDownloadBytes</strong></td>
+                        <td>{{ node_info.data.stats.Overlay.TotalDownloadBytes }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TotalUploadBytes</strong></td>
+                        <td>{{ node_info.data.stats.Overlay.TotalUploadBytes }}</td>
+                    </tr>
+                    </tbody>
+            </table>
+            </div>
+            <div style="float:left;width:15%;height:160px;text-align:center;margin:10px;outline-width:10px;vertical-align: middle;display: table-cell;font-size:10px">
+                <table id="{{ node_info.name }}_P2P_tab" border="0" style="width: 100%">
+                    <thead class="table_head">
+                        <tr>
+                            <th bgcolor="#1E90FF" colspan="2"><strong>P2P</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><strong>conns</strong></td>
+                        {% if node_info.data.p2p.connectionCount > 100 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.p2p.conns }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.p2p.connectionCount }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>idIndexedConns</strong></td>
+                        {% if node_info.data.p2p.idIndexedConns > 100 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.p2p.idIndexedConns }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.p2p.idIndexedConns }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>uploadSessionRequests</strong></td>
+                        {% if node_info.data.p2p.uploadSessionRequests > 50 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.p2p.uploadSessionRequests }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.p2p.uploadSessionRequests }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>downloadSessionRequests</strong></td>
+                        {% if node_info.data.p2p.downloadSessionRequests > 50 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.p2p.downloadSessionRequests }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.p2p.downloadSessionRequests }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>chunkDispatchRequests</strong></td>
+                        {% if node_info.data.p2p.chunkDispatchRequests > 50 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.p2p.chunkDispatchRequests }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.p2p.chunkDispatchRequests }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>udpPendingConns</strong></td>
+                        {% if node_info.data.p2p.udp.udpPendingConns > 100 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.p2p.udp.udpPendingConns }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.p2p.udp.udpPendingConns }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>udpPendingConnAddrs</strong></td>
+                        {% if node_info.data.p2p.udp.udpPendingConnAddrs > 100 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.p2p.udp.udpPendingConnAddrs }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.p2p.udp.udpPendingConnAddrs }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><strong>pendingConns</strong></td>
+                        {% if node_info.data.p2p.tcp.pendingConns > 100 %}
+                            <td bgcolor="#cd5c5c">{{ node_info.data.p2p.tcp.pendingConns }}</td>
+                        {% else %}
+                            <td>{{ node_info.data.p2p.tcp.pendingConns }}</td>
+                        {% endif %}
+                    </tr>
+                    </tbody>
+            </table>
+        </div>
+        </div>
+        <HR style="border:0px;height:1px;border:none;border-top:1px;border-bottom:0px;line-height:1px;vertical-align: center" width="100%" color=#1E90FF />
+    {% endfor %}
+</body>
+
+</html>

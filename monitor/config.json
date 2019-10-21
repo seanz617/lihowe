@@ -1,0 +1,80 @@
+{
+    "users": [
+        {"id": "tangsan@pplabs.org", "username": "tangsan@pplabs.org", "password": "123456"},
+        {"id": "tacimi@pplabs.org", "username": "tacimi@pplabs.org", "password": "123456"},
+        {"id": "viktor@pplabs.org", "username": "viktor@pplabs.org", "password": "123456"},
+        {"id": "cestlavie@pplabs.org", "username": "cestlavie@pplabs.org", "password": "123456"},
+        {"id": "fengzhihen@pplabs.org", "username": "fengzhihen@pplabs.org", "password": "123456"},
+        {"id": "aldo@pplabs.org", "username": "aldo@pplabs.org", "password": "123456"},
+        {"id": "yates@pplabs.org", "username": "yates@pplabs.org", "password": "123456"},
+        {"id": "qiyu@pplabs.org", "username": "qiyu@pplabs.org", "password": "123456"}
+    ],
+
+    "white_list": [
+        "127.0.0.1",
+        "35.160.24.147",
+        "47.110.88.167",
+        "52.37.152.218",
+        "47.110.91.131",
+        "52.34.153.8",
+        "54.69.184.222",
+        "34.219.200.236",
+        "52.43.83.24",
+        "34.220.66.174",
+        "34.220.103.61",
+        "54.202.175.251",
+        "18.236.246.43",
+        "34.222.21.81",
+        "116.62.211.231",
+        "116.62.138.191",
+        "118.31.1.0"
+    ],
+
+    "update_report_interval": 5, 
+
+    "resource": {
+        "indexers": {
+            "node_num": 3, 
+            "node_list": ["indexer"]
+        }, 
+        "verifiers": {
+            "node_num": 2, 
+            "node_list": ["verifier0","verifier1"]
+        }, 
+        "centers": {
+            "node_num": 1, 
+            "node_list": ["center0"]
+        }, 
+        "miners": {
+            "node_num": 12, 
+            "node_list": [
+                "miner0",
+                "miner1",
+                "miner6",
+                "miner7",
+                "miner8",
+                "miner9",
+                "miner10",
+                "miner11",
+                "miner12",
+                "miner13",
+                "miner14",
+                "miner15"
+            ]
+        }, 
+        "bootstraps": {
+            "node_num": 2, 
+            "node_list": [
+                "bootstrap0",
+                "bootstrap1"
+            ]
+        }
+    }, 
+    "mysql": {
+        "host": "127.0.0.1", 
+        "password": "123...qA", 
+        "db": "monitor", 
+        "port": 3306, 
+        "user": "root"
+    }
+}

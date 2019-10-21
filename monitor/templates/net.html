@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+	
+    <title>net monitor</title>
+	
+    <link rel='stylesheet' type='text/css' href='static/css/style.css' />
+
+    <script language="javascript" type="text/javascript" src="static/js/flot/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="static/js/flot/jquery.flot.min.js"></script>
+    <script language="javascript" type="text/javascript" src="static/js/flot/jquery.flot.time.js"></script>
+    <script language="javascript" type="text/javascript" src="static/js/flot/jquery.flot.symbol.js"></script>
+
+    <script type='text/javascript'>
+        {% for t in n_s_h %}
+        $(function(){
+            var dataset = [            
+                { label: "download KB/s", data: {{ t.data.download }}, lines: { show: true }, color: "#EEC900"}, 
+                { label: "upload KB/s", data: {{ t.data.upload }}, lines: { show: true }, color: "#63B8FF" } 
+            ];
+            var options = {
+                series: {
+                    lines: { show: true },
+                    points: {
+                        radius: 3,
+                        show: true
+                    }
+                },
+                xaxis: {
+                    mode: "time",
+                    timeformat: "%y:%m:%d"
+                }
+            };
+            $.plot("#speed_history_{{ t.ssid }}", dataset,options);
+        });
+        {% endfor %}
+    </script>
+</head>
+
+<body>
+    <div class="nav-wrap">
+        <ul class="group" id="example-one">
+            <li><a href="/storage">存储</a></li>
+            <li><a href="/pcdn">PCDN</a></li>
+            <li><a class="current_page_item" href="/net">网络</a></li>
+            <li><a href="/logout">退出</a></li>
+        </ul>
+    </div>
+
+    <div style=" width:100%; text-align:center">
+        <hr style=" width:20%; display:inline-block" />net speed today<hr style=" width:20%; display:inline-block" />
+        <p>    </p>
+    </div>
+
+    <div id="netspeed_today" style="width:100%;" color=#000000>
+        {% for t in n_s_t %}
+            <table align="right" width="100%" border=1px cellspacing="0" color=#000000>
+                <tr>
+                    <td>{{ t.ssid }}</td>
+                    <td>下载速度 KB/s</td>
+                    <td>上传速度 KB/s</td>
+                </tr>
+                {% for tr in t.data %}
+                <tr>
+                    {% for td in tr %}
+                        <td>{{ td }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        {% endfor %}
+    </div>
+   
+    <div style=" width:100%; text-align:center">
+        <hr style=" width:20%; display:inline-block" />net speed history<hr style=" width:20%; display:inline-block" />
+        <p>    </p>
+    </div>
+
+    {% for t in n_s_h %}
+    <div style="width:100%;height:140px;border:0px solid #000000;margin-top:10px;color:#000000">
+         <div style="float:left;width:100%;height:120px;text-align:center;margin:10px">
+             <p>{{ t.ssid }}</p>
+             <div id="speed_history_{{ t.ssid }}" style="width:100%;height:120px;">
+             </div>
+         </div>
+    </div>
+    {% endfor %}
+
+    <div style=" width:100%; text-align:center">
+        <hr style=" width:20%; display:inline-block" />net switch today<hr style=" width:20%; display:inline-block" />
+        <p>    </p>
+    </div>
+
+    <div id="switch" style="width:100%;" color=#000000>
+        <table align="right" width="100%" border=1px cellspacing="0" color=#000000>
+            <tr>
+                <td>switch</td>
+                <td>switch time</td>
+                <td>old</td>
+                <td>new</td>
+            </tr>
+            {% for tr in s_t %}
+            <tr>
+                {% for td in tr %}
+                    <td>{{ td }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div style=" width:100%; text-align:center">
+        <hr style=" width:20%; display:inline-block" />net switch history<hr style=" width:20%; display:inline-block" />
+    </div>
+
+    <div id="switch_history" style="width:100%;" color=#000000>
+        <table align="right" width="100%" border=1px cellspacing="0" color=#000000>
+            <tr>
+                <td>switch</td>
+                <td>total stop {s}</td>
+                <td>total switch count</td>
+                <td>average stop time (s)</td>
+            </tr>
+            {% for tr in s_h %}
+            <tr>
+                {% for td in tr %}
+                    <td>{{ td }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+</body>
+</html>
