@@ -1,0 +1,267 @@
+<html>
+<head>
+    <title>Test Plan Manager</title>
+    <script type="application/javascript" src="/static/js/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+    <script type="application/javascript" src="/static/js/jstree/dist/jstree.min.js"></script>
+
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="stylesheet" href="/static/js/jstree/dist/themes/default/style.min.css" />
+    <link rel="stylesheet" href="../static/css/style.css">
+
+    <script>
+        $(function() {
+            var menu = document.getElementById("aside")
+            var fold = document.getElementById("btn")
+            var path = document.getElementById("path")
+            var info = document.getElementById("info")
+
+            var tree = $('#jstree').jstree({
+                // 引入插件
+                'plugins': ['types','themes','contextmenu',"state", "wholerow"],
+                'types': {
+                    'default': {
+                        'icon': false  // 删除默认图标
+                    },
+                },
+                'checkbox': {  // 去除checkbox插件的默认效果
+                    'tie_selection': false,
+                    'keep_selected_style': false,
+                    'whole_node': false
+                },
+                'core': {
+                    "check_callback":true,
+                    'multiple' : true,
+                    'data' : {
+                        'type': "GET",
+                        "async": "true",
+                        'contentType': "application/json; charset=utf-8",
+                        'url': "/getcases",
+                        'dataType': 'JSON',
+                        "data": "{}",
+                        'data': function (node) {
+                            if (node.id == '#') {
+                                return {"id": 0,"plan_id":"{{ plan_id }}"}
+                            }else{
+                                return {"id": node.id,"plan_id":"{{ plan_id }}"}
+                            }
+                        },
+                        'success': function (retval) {
+                            var r = [];
+                            var data = retval;
+                            for(var i=0 ; i<data.length; i++){
+                                $("#" + data[i].id).css("background-color","red");
+                            }
+
+                            //$("#" + y + " a").addClass('.Selected');
+                        }
+                    },// 生成节点的数据，nodeData是后台返回的JSON数据
+                    'dblclick_toggle': true   //允许tree的双击展开
+                },
+                'contextmenu': {    // 右键菜单
+                    'items': {
+                    }
+                }
+            }
+        );
+
+        $('#jstree').bind("activate_node.jstree", function (obj, e) {
+            if (e.node.id >= 0 && e.node.id < 100000) {
+                $("#case_info").hide()
+
+            } else if (e.node.id >= 100000) {
+                $("#case_info").show();
+                $.get("/getcases",{"id":e.node.id,"plan_id":"{{ plan_id}}" },function(data,status){
+                    var json_data = eval("(" + data + ")");
+
+                    $("#title").html(json_data.title);
+
+                    switch(json_data.priority) {
+                        case 0:
+                            $("#priority").html("High");
+                            break;
+                        case 1:
+                            $("#priority").html("Middle");
+                            break;
+                        case 2:
+                            $("#priority").html("Low");
+                            break;
+                        default :
+                            $("#priority").html("High");
+                    }
+
+                    switch(json_data.auto) {
+                        case 0:
+                            $("#automation").html("No");
+                            break;
+                        case 1:
+                            $("#automation").html("Yes");
+                            break;
+                        default :
+                            $("#automation").html("No");
+                    }
+
+                    $("#describe").html(json_data.description);
+                    $("#steps").html(json_data.steps);
+                    $("#expect").html(json_data.expect);
+                    $("#time").text("Create Time:" + json_data.time);
+                    $("#result").val(json_data.result);
+                    $("#remarks").html(json_data.remarks);
+                    $("#issues").html(json_data.issues);
+                    $("#case_id").text(e.node.id);
+                })
+            }
+            full_node = $("#jstree").jstree(true).get_node(e.node)
+            path.innerHTML = $("#jstree").jstree(true).get_path(full_node," >>> ")
+        });
+
+        btn.onclick = function() {
+            if (menu.offsetLeft == 0) {
+                menu.style['margin-left'] = -25 + "%";
+                fold.style['margin-left'] = 0 + "%";
+                info.style['margin-left'] = 1 + "%";
+            } else {
+                menu.style['margin-left'] = 0 + "px";
+                fold.style['margin-left'] = 25 + "%";
+                info.style['margin-left'] = 26 + "%";
+            }
+        };
+
+        update_case_btn.onclick = function(){
+            var result = $("#result").val();
+            if (result == undefined) {
+                alert("result can't be empty");
+                return
+            }
+
+            var remarks = $("#remarks").val();
+
+            var issues = $("#issues").val();
+
+            var case_id = $("#case_id").text();
+
+            var params = {
+                "plan_id": "{{ plan_id }}",
+                "case_id": case_id,
+                "result":result,
+                "remarks": remarks,
+                "issues": issues
+            }
+
+            $.get("/updateplancase",params,function(data,status) {
+                if (status != "success" ) {
+                    alert(data);
+                }else{
+                    tree.jstree(true).refresh();
+                }
+            });
+        }
+
+    });
+    </script>
+
+</head>
+<body>
+    <div class="nav-wrap" style="width:100%">
+        <ul class="group" id="example-one" style="width:100%">
+            <li><a href="/CaseManager" id="case_manager">用例管理</a></li>
+            <li><a href="/PlanManager" id="plan_manager" style="color:#fff;">测试计划管理</a></li>
+            <li><a href="/Report" id="report_manager">报表</a></li>
+            <li><a id="path" style="margin-left: 50px;color:#fff;"></a></li>
+        </ul>
+    </div>
+
+    <aside id="aside">
+        <div id="jstree" style="width:97%; background: #4682B4;height:100%">
+        </div>
+    </aside>
+    <button id="btn">|||</button>
+
+    <div id="info">
+        <table style="margin-left: 5px;margin-top: 5px; width: 100%;">
+            <tr>
+                <td>{{ plan_id }}</td>
+                <td colspan="2">{{ plan_create_time }}</td>
+            </tr>
+            <tr>
+                <td>ok:{{ ok_count }}</td>
+                <td>fail:{{ fail_count }}</td>
+                <td>untest:{{ untest_count }}</td>
+            </tr>
+        </table>
+
+        <hr />
+
+        <table id="case_info" style="margin-left: 5px;margin-top: 5px; width: 100%; display:none">
+            <tr>
+                <td width="15%">Title:</td>
+                <td id="title" width="85%"></td>
+            </tr>
+            <tr>
+                <td width="15%">Priority:</td>
+                <td id="priority" width="85%"></td>
+            </tr>
+            <tr>
+                <td width="15%">Automation:</td>
+                <td id="automation" width="85%"></td>
+            </tr>
+            <tr>
+                <td width="15%">Describe:</td>
+                <td width="85%" height="20px">
+                    <textarea id="describe" readonly="readonly" style="width:100%;height:20px"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" >Steps:</td>
+                <td width="85%" height="50px">
+                    <textarea id="steps" readonly="readonly" style="width:100%;height:50px"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td width="15%">Expect:</td>
+                <td width="85%" height="50px">
+                    <textarea id="expect" readonly="readonly" style="width:100%;height:50px"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" width="100%">
+                    <a id="time" style="width:98%">Create Time: 2019-08-15 11:12:13</a>
+                </td>
+            </tr>
+
+            <tr>
+                <td width="15%" >result:</td>
+                <td width="85%">
+                    <select id="result" style="width:100px;">
+                         <option value="0">Untest</option>
+                         <option value="1">OK</option>
+                         <option value="2">Fail</option>
+                     </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td width="15%" >remarks:</td>
+                <td width="85%">
+                    <textarea id="remarks" style="width:98%;height:50px;"></textarea>
+                </td>
+            </tr>
+
+            <tr>
+                <td width="15%" >issues:</td>
+                <td width="85%">
+                    <textarea id="issues" style="width:98%;height:50px;"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" width="100%">
+                    <a id="case_id" style="width:98%;display:none"></a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" width="100%">
+                    <button id="update_case_btn" type="update" >update this case!</button></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<html>
+<head>
+    <title>Test Plan Manager</title>
+    <script type="application/javascript" src="static/js/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+    <script type="application/javascript" src="static/js/jstree/dist/jstree.min.js"></script>
+
+    <link rel="stylesheet" href="static/css/style.css" />
+    <link rel="stylesheet" href="static/js/jstree/dist/themes/default/style.min.css" />
+    <link rel="stylesheet" href="../static/css/style.css">
+
+    <script>
+        $(function() {
+            var menu = document.getElementById("aside")
+            var fold = document.getElementById("btn")
+            var path = document.getElementById("path")
+            var info = document.getElementById("info")
+
+            var tree = $('#jstree').jstree({
+                // 引入插件
+                'plugins': ['checkbox','types','themes','contextmenu',"state", "wholerow","search"],
+                'types': {
+                    'default': {
+                        'icon': false  // 删除默认图标
+                    },
+                },
+                'checkbox': {  // 去除checkbox插件的默认效果
+                    'tie_selection': false,
+                    'keep_selected_style': false,
+                    'whole_node': false
+                },
+                'core': {
+                    "check_callback":true,
+                    'multiple' : true,
+                    'data' : {
+                        'type': "GET",
+                        "async": "true",
+                        'contentType': "application/json; charset=utf-8",
+                        'url': "/getcases",
+                        'dataType': 'JSON',
+                        "data": "{}",
+                        'data': function (node) {
+                            if (node.id == '#') {
+                                return {"id": 0}
+                            }else{
+                                return {"id": node.id}
+                            }
+                        },
+                        'success': function (retvel) {
+                            var r = [];
+                            var data = eval("(" + retvel.d + ")");
+                            for (var key in data) {
+                                if (data.hasOwnProperty(key)) {
+                                    var y = data[key].id;
+                                    r.push(y);
+                                    $("#" + y + " a").addClass('.Selected');
+                                }
+                            }
+                        }
+                    },// 生成节点的数据，nodeData是后台返回的JSON数据
+                    'dblclick_toggle': true   //允许tree的双击展开
+                },
+                'contextmenu': {    // 右键菜单
+                    'items': {
+                    }
+                }
+            }
+        );
+
+        $('#jstree').bind("activate_node.jstree", function (obj, e) {
+            if (e.node.id >= 0 && e.node.id < 100000) {
+                $("#case_info").hide()
+
+            } else if (e.node.id >= 100000) {
+                $("#case_info").show();
+                $.get("/getcases",{"id":e.node.id},function(data,status){
+                    var json_data = eval("(" + data + ")");
+                    $("#title").html(json_data.title);
+
+                    switch(json_data.priority) {
+                        case 0:
+                            $("#priority").html("P1");
+                            break;
+                        case 1:
+                            $("#priority").html("P2");
+                            break;
+                        case 2:
+                            $("#priority").html("P3");
+                        default :
+                            $("#priority").html("P1");
+                    }
+
+                    switch(json_data.auto) {
+                        case 0:
+                            $("#automation").html("No");
+                            break;
+                        case 1:
+                            $("#automation").html("Yes");
+                            break;
+                        default :
+                            $("#automation").html("No");
+                    }
+
+                    $("#describe").html(json_data.description);
+                    $("#steps").html(json_data.steps);
+                    $("#expect").html(json_data.expect);
+                    $("#time").text("Create Time:" + json_data.time)
+                })
+            }
+            full_node = $("#jstree").jstree(true).get_node(e.node);
+            path.innerHTML = $("#jstree").jstree(true).get_path(full_node," >>> ")
+        });
+
+        btn.onclick = function() {
+            if (menu.offsetLeft == 0) {
+                menu.style['margin-left'] = -25 + "%";
+                fold.style['margin-left'] = 0 + "%";
+                info.style['margin-left'] = 1 + "%";
+            } else {
+                menu.style['margin-left'] = 0 + "px";
+                fold.style['margin-left'] = 25 + "%";
+                info.style['margin-left'] = 26 + "%";
+            }
+        };
+
+        show_history_btn.onclick = function() {
+            var plan_id = $("#plan_list").find("option:selected").text();
+            $(window).attr('location','/ShowPlan/' + plan_id);
+        };
+
+        create_plan_btn.onclick = function() {
+            var ret = "";
+            var plan_id = $("#plan_id").val();
+            $.each($("#jstree").jstree("get_checked",true),function(){
+                if (this.id >= 0) {
+                    full_node = $("#jstree").jstree(true).get_node(this);
+                    ret = ret + $("#jstree").jstree(true).get_path(full_node,"-",true) + ",";
+                }
+            });
+            $.get("/createplan",{"planid":plan_id,"caselist":ret},function(data,status){
+
+                if (data == "" || status != "success") {
+                    $("#operation_result").text("create test plan fail");
+                } else {
+                    $("#plan_list").append("<option value=" + data + ">" + data + "</option>");
+                    $("#plan_id").val("");
+                    $("#operation_result").text("create test plan success");
+                }
+            });
+        };
+        $('#search_box').keyup(function () {
+            $('#jstree').jstree("load_all");
+            var search_string = $('#search_box').val();
+            $('#jstree').jstree("search",search_string);
+        });
+    });
+    </script>
+
+</head>
+<body>
+    <div class="nav-wrap" style="width:100%">
+        <ul class="group" id="example-one" style="width:100%">
+            <li><a href="/CaseManager" id="case_manager">用例管理</a></li>
+            <li><a href="/PlanManager" id="plan_manager" style="color:#fff;">测试计划管理</a></li>
+            <li><a href="/Report" id="report_manager">报表</a></li>
+            <li><a id="path" style="margin-left: 50px;color:#fff;"></a></li>
+        </ul>
+    </div>
+
+    <aside id="aside">
+        <input id="search_box" type="text" placeholder="search test case title" style="width:90%;margin-left: 10px;margin-top:5px;margin-bottom: 5px;border: 1px solid #ccc；border-radius: 5px;">
+        <div id="jstree" style="width:97%; background: #4682B4;height:100%">
+        </div>
+    </aside>
+    <button id="btn">|||</button>
+
+    <div id="info">
+        <select id="plan_list" style="width:200px;margin-left:5px;margin-top:5px">
+            {% for opt in plans%}
+                <option value={{ opt }}>{{ opt }}</option>
+            {% endfor %}
+        </select>
+        <button id="show_history_btn" type="create" style="margin-left:5px;margin-top:5px">Show Plan Detail</button>
+        <br/>
+        <p style="margin-left: 5px;margin-top: 10px;">
+            if you want to checkout old test plan result,
+            <br/>
+            you can select test-plan in drop-box above and then click [show plan detail] button.
+        </p>
+
+        <br/>
+
+        <input id="plan_id" type="text" style="width:200px;margin-left:5px;margin-top:5px"/>
+        <button id="create_plan_btn" type="create" style="margin-left:5px;margin-top:5px;">Create Test Plan</button>
+        <a id="operation_result"></a>
+
+        <p style="margin-left: 5px;margin-top: 10px;">
+            if you want to create new test plan,
+            <br/>
+            pls select test cases you want to test in this plan from left cases tree,
+            <br/>
+            and then click [create test plan] button above.
+        </p>
+
+        <br/>
+
+        <table id="case_info" style="margin-left: 5px;margin-top: 5px; width: 100%; display:none">
+            <tr>
+                <td colspan="2"><hr/></td>
+            </tr>
+            <tr>
+                <td width="15%">Title:</td>
+                <td id="title" width="85%"></td>
+            </tr>
+            <tr>
+                <td width="15%">Priority:</td>
+                <td id="priority" width="85%"></td>
+            </tr>
+            <tr>
+                <td width="15%">Automation:</td>
+                <td id="automation" width="85%"></td>
+            </tr>
+            <tr>
+                <td width="15%">Describe:</td>
+                <td width="85%" height="20px">
+                    <textarea id="describe" readonly="readonly" style="width:100%;height:20px"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" >Steps:</td>
+                <td width="85%" height="50px">
+                    <textarea id="steps" readonly="readonly" style="width:100%;height:50px"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td width="15%">Expect:</td>
+                <td width="85%" height="50px">
+                    <textarea id="expect" readonly="readonly" style="width:100%;height:50px"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" width="100%">
+                    <a id="time" style="width:98%"></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,443 @@
+<html>
+<head>
+    <title>Case Manager</title>
+    <script type="application/javascript" src="static/js/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+    <script type="application/javascript" src="static/js/jstree/dist/jstree.min.js"></script>
+
+    <link rel="stylesheet" href="static/css/style.css" />
+    <link rel="stylesheet" href="static/js/jstree/dist/themes/default/style.min.css" />
+    <link rel="stylesheet" href="../static/css/style.css">
+
+    <script>
+        $(function() {
+            var menu = document.getElementById("aside");
+            var fold = document.getElementById("btn");
+            var path = document.getElementById("path");
+            var info = document.getElementById("info");
+
+            var tree = $('#jstree').jstree({
+                // 引入插件
+                'plugins': ['types','themes','contextmenu', "dnd","state", "wholerow","search"],
+                "search": {
+                    "case_sensitive":false,
+                    "show_only_matcher":true
+                },
+                'types': {
+                    'default': {
+                        'icon': false  // 删除默认图标
+                    },
+                },
+                'checkbox': {  // 去除checkbox插件的默认效果
+                    'tie_selection': false,
+                    'keep_selected_style': false,
+                    'whole_node': false
+                },
+                'core': {
+                    "check_callback":true,
+                    'multiple' : true,
+                    'data' : {
+                        'type': "GET",
+                        "async": "true",
+                        'contentType': "application/json; charset=utf-8",
+                        'url': "/getcases",
+                        'dataType': 'JSON',
+                        "data": "{}",
+                        'data': function (node) {
+                            if (node.id == '#') {
+                                return {"id": 0}
+                            }else{
+                                return {"id": node.id}
+                            }
+                        },
+                        'success': function (retvel) {
+                            var r = [];
+                            var data = eval("(" + retvel.d + ")");
+                            for (var key in data) {
+                                if (data.hasOwnProperty(key)) {
+                                    var y = data[key].id;
+                                    r.push(y);
+                                    $("#" + y + " a").addClass('.Selected');
+                                }
+                            }
+                        }
+                    },// 生成节点的数据，nodeData是后台返回的JSON数据
+                    'dblclick_toggle': true   //允许tree的双击展开
+                },
+                'contextmenu': {    // 右键菜单
+                    'items': {
+                        'edit': {
+                            'label': 'edit',
+                            'action': function (obj) {
+                                var inst = jQuery.jstree.reference(obj.reference);
+                                var clickedNode = inst.get_node(obj.reference);
+                                inst.edit(obj.reference,clickedNode.val,function (node, status){
+                                    if(node.id < 100000){
+                                         $.get("/updatenode",{"id":node.id,"name":node.text},function(data,status){
+                                            if(data=="success"){
+                                            }else{
+                                                alert(data)
+                                            }
+                                        });
+                                    }else{
+                                         $.get("/updatecasetitle",{"id":node.id,"name":node.text},function(data,status){
+                                            if(data=="success"){
+                                                $("#title").val(node.text);
+                                            }else{
+                                                alert(data)
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        },
+                        'delete': {
+                            'label': 'delete',
+                            'action': function (obj) {
+                                var inst = jQuery.jstree.reference(obj.reference);
+                                inst.delete_node(obj.reference);
+                            }
+                        },
+                        'addcase': {
+                            'label': 'add sub case',
+                            'action': function (obj) {
+                                var inst = jQuery.jstree.reference(obj.reference);
+                                var clickedNode = inst.get_node(obj.reference);
+
+                                $("#case_info").show();
+                                $('#update_case_btn').hide();
+                                $('#add_case_btn').show();
+
+                                $("#title").val("");
+                                $("#description").val("");
+                                $("#steps").val("");
+                                $("#expect").val("");
+                                $("#time").text("");
+                                $("#priority").val(0);
+                                $("#automation").val(0);
+
+                                $("#parent_id").text(clickedNode.id);
+                                var newNode = inst.create_node(clickedNode,
+                                    {   //'id': 'ajson20',
+                                        //'parent' : 'ajson2',
+                                        'icon' : 'jstree-file',
+                                        'text':'新节点'},'last',function(node){
+
+                                        //回调返回创建后点节点，给新节点改名
+                                        inst.edit(node,node.val,function(node,status){
+                                            $("#title").val(node.text);
+                                        });
+                                    },'');
+                            }
+                        },
+                        'add': {
+                            'label': 'add sub classifier',
+                            'action': function (obj) {
+                                var inst = jQuery.jstree.reference(obj.reference);
+                                var clickedNode = inst.get_node(obj.reference);
+                                var newNode = inst.create_node(clickedNode,
+                                    {   //'id': 'ajson20',
+                                        //'parent' : 'ajson2',
+                                        'icon' : 'jstree-file',
+                                        'text':'新节点'},'last',function(node){
+                                        //回调返回创建后点节点，给新节点改名
+                                        inst.edit(node,node.val,function(node,status){
+                                            $.get("/addnode",{"parent":clickedNode.id,"name":node.text},function(data,status){
+                                                if (data == "" || status != "success") {
+                                                    alert(data)
+                                                }else{
+                                                    tree.jstree(true).refresh();
+                                                }
+                                            });
+                                        });
+                                    },'');
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        $('#jstree').on("delete_node.jstree", function (e, data) {
+             $.get("/deletenode",{"id":data.node.id},function(data,status){
+                 if(data=="success"){
+                 }else{
+                     alert(data)
+                 }
+             });
+        });
+
+         $( "#jstree" ).on('move_node.jstree', function(e,data){
+             $.get("/movenode",{"id":data.node.id,"parent":data.node.parent},function(data,status){
+                 if(data=="success"){
+                 }else{
+                     alert(data)
+                 }
+             });
+         });
+
+        $('#jstree').bind("activate_node.jstree", function (obj, e) {
+            $("#case_id").text(e.node.id);
+
+            if (e.node.id >= 0 && e.node.id < 100000) {
+                $("#case_info").hide();
+            } else if (e.node.id >= 100000) {
+                $("#case_info").show();
+                $('#update_case_btn').show();
+                $('#add_case_btn').hide();
+
+                $.get("/getcases",{"id":e.node.id},function(data,status){
+                    var json_data = eval("(" + data + ")");
+                    $("#title").val(json_data.title);
+                    $("#priority").val(json_data.priority);
+                    $("#auto").val(json_data.auto);
+                    $("#description").val(json_data.description);
+                    $("#steps").val(json_data.steps);
+                    $("#expect").val(json_data.expect);
+                    $("#time").text("Create Time:" + json_data.time);
+                })
+            }
+            full_node = $("#jstree").jstree(true).get_node(e.node);
+            var tmp_path = $("#jstree").jstree(true).get_path(full_node," >>> ");
+            path.innerHTML = tmp_path;
+        });
+
+        btn.onclick = function() {
+            if (menu.offsetLeft == 0) {
+                menu.style['margin-left'] = -25 + "%";
+                fold.style['margin-left'] = 0 + "%";
+                info.style['margin-left'] = 1 + "%";
+            } else {
+                menu.style['margin-left'] = 0 + "px";
+                fold.style['margin-left'] = 25 + "%";
+                info.style['margin-left'] = 26 + "%";
+            }
+        };
+
+        update_case_btn.onclick = function(){
+
+            var title = $("#title").val();
+            if (title == "") {
+                alert("Title can't be empty");
+                return
+            }
+
+            var priority = $("#priority").val();
+            if (priority == undefined) {
+                alert("Priority can't be empty");
+                return
+            }
+
+            var auto = $("#auto").val();
+            if (auto == undefined) {
+                alert("Automation can't be empty");
+                return
+            }
+
+            var desc = $("#description").val();
+
+            var steps = $("#steps").val();
+
+            var expect = $("#expect").val();
+
+            var case_id = $("#case_id").text();
+
+            var params = {
+                "case_id":case_id,
+                "title":title,
+                "priority":priority,
+                "auto":auto,
+                "description":desc,
+                "steps":steps,
+                "expect":expect
+            };
+
+            if(case_id != ""){
+                $.get("/updatecase",params,function(data,status) {
+                    if (data == "" || status != "success") {
+                        $("#operation_result").text("add or update case fail")
+                    }else{
+                        var json_data = eval("(" + data + ")");
+                        $("#case_id").text(json_data.case_id);
+                        $("#time").text(json_data.time);
+                        tree.jstree(true).refresh();
+                        $("#operation_result").text("add or update case success")
+                    }
+                });
+            }
+        };
+
+        add_case_btn.onclick = function(){
+            var parent_id = $("#parent_id").text();
+
+            var title = $("#title").val();
+            if (title == "") {
+                alert("Title can't be empty");
+                return
+            }
+
+            var priority = $("#priority").val();
+            if (priority == undefined) {
+                alert("Priority can't be empty");
+                return
+            }
+
+            var auto = $("#auto").val();
+            if (auto == undefined) {
+                alert("Automation can't be empty");
+                return
+            }
+
+            var desc = $("#description").val();
+
+            var steps = $("#steps").val();
+
+            var expect = $("#expect").val();
+
+            $("#case_id").text("");
+
+            var params = {
+                "parent":parent_id,
+                "title":title,
+                "priority":priority,
+                "auto":auto,
+                "description":desc,
+                "steps":steps,
+                "expect":expect
+            };
+
+            $.get("/addcase",params,function(data,status){
+                if (data == "" || status != "success") {
+                    $("#operation_result").text("add case fail")
+                }else{
+                    var json_data = eval("(" + data + ")");
+                    $("#case_id").text(json_data.case_id);
+                    $("#time").text(json_data.time);
+                    tree.jstree(true).refresh();
+                    $("#operation_result").text("add case success")
+                }
+            });
+        };
+
+        $('#search_box').keyup(function () {
+            $('#jstree').jstree("load_all");
+            var search_string = $('#search_box').val();
+            $('#jstree').jstree("search",search_string);
+        });
+
+        search_Auto.onclick = function () {
+            alert('Auto')
+        };
+
+        search_Auto_.onclick = function () {
+            alert('Auto')
+        };
+
+        search_High.onclick = function () {
+            alert('High')
+        };
+
+        search_Middle.onclick = function () {
+            alert('Middle')
+        };
+
+        search_Low.onclick = function () {
+            alert('Low')
+        };
+    });
+    </script>
+
+</head>
+<body>
+    <div class="nav-wrap" style="width:100%">
+        <ul class="group" id="example-one" style="width:100%">
+            <li><a href="/CaseManager" style="color:#fff;" id="case_manager">用例管理</a></li>
+            <li><a href="/PlanManager" id="plan_manager">测试计划管理</a></li>
+            <li><a href="/Report" id="report_manager">报表</a></li>
+            <li><a id="path" style="margin-left: 50px;color:#fff;"></a></li>
+        </ul>
+    </div>
+
+    <aside id="aside">
+        <input id="search_box" type="text" placeholder="search test case title" style="width:50%;margin-left: 10px;margin-top:5px;margin-bottom: 5px;border: 1px solid #ccc；border-radius: 5px;">
+        <button id="search_Auto" style="margin-left: 15px;margin-right: 0px;">A</button>
+        <button id="search_Auto_" style="margin-left: 0px;margin-right: 0px;"><s>A</s></button>
+        <button id="search_High" style="margin-left: 0px;margin-right: 0px;">H</button>
+        <button id="search_Middle" style="margin-left: 0px;margin-right: 0px;">M</button>
+        <button id="search_Low" style="margin-left: 0px;margin-right: 0px;">L</button>
+
+        <div id="jstree" style="width:97%; background: #4682B4;height:100%">
+        </div>
+    </aside>
+    <button id="btn">|||</button>
+
+    <div id="info">
+        <table id="case_info" style="margin-left: 5px;margin-top: 5px; width: 100%;display:none;">
+            <tr>
+                <td width="15%">Title:</td>
+                <td width="85%">
+                    <input id="title" style="width:98%;" type="text" placeholder="单行文本框" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%">Priority:</td>
+                <td width="85%">
+                     <select id="priority" style="width:100px;">
+                         <option value="0">High</option>
+                         <option value="1">Middle</option>
+                         <option value="2">Low</option>
+                     </select>                  
+                </td>
+            </tr>
+            <tr>
+                <td width="15%">Automation:</td>
+                <td width="85%">
+                     <select id="auto" style="width:100px;">
+                         <option value="0">No</option>
+                         <option value="1">Yes</option>
+                     </select>                  
+                </td>
+            </tr>
+            <tr>
+                <td width="15%">Description:</td>
+                <td width="85%">
+                    <input id="description" style="width:98%;" type="text" placeholder="单行文本框" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" >Steps:</td>
+                <td width="85%">
+                    <textarea id="steps" style="width:98%;height:100px;"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td width="15%">Expect:</td>
+                <td width="85%">
+                    <textarea id="expect" style="width:98%;height:100px;"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" width="100%">
+                    <a id="time" style="width:98%;">Create Time: 2019-08-15 11:12:13</a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" width="100%">
+                    <a id="case_id" style="width:98%;display:none"></a>
+                    <a id="parent_id" style="width:98%;display:none"></a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" width="100%">
+                    <button id="update_case_btn" style="display:none;">update this case!</button>
+                    <button id="add_case_btn"  style="display:none;">add this case!</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" width="100%">
+                    <p id="operation_result" style="width:98%;"></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
