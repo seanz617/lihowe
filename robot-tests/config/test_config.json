@@ -1,0 +1,397 @@
+{
+    "env": "R",
+    "subenv": "A",
+    "parallel":false,
+
+    "kube": {
+        "kube_config": "/home/workspace/robot-tests/config/kubeconfig.yml",
+        "resource_config": "/home/workspace/kube-config"
+    },
+
+    "mysql": {
+        "R": {
+            "A": {
+                "host": "192.168.50.231",
+                "port": 3306,
+                "user": "root",
+                "password": "123456",
+                "db": "ppio"
+            },
+            "B": {
+                "host": "192.168.50.231",
+                "port": 3306,
+                "user": "root",
+                "password": "123456",
+                "db": "ppioB"
+            }
+        },
+        "S": {
+            "A": {
+                "host": "172.172.0.11",
+                "port": 3306,
+                "user": "root",
+                "password": "168168",
+                "db": "ppio"
+            },
+            "B": {
+                "host": "172.172.0.11",
+                "port": 3306,
+                "user": "root",
+                "password": "168168",
+                "db": "ppio"
+            }
+        }
+    },
+    "redis": {
+        "R": {
+            "A": {
+                "host": "192.168.50.208",
+                "port": 6379,
+                "password": "",
+                "db": "0"
+            },
+            "B": {
+                "host": "192.168.50.208",
+                "port": 6379,
+                "password": "",
+                "db": "1"
+            }
+        },
+        "S": {
+            "A": {
+                "host": "127.0.0.1",
+                "port": 6379,
+                "password": "",
+                "db": "0"
+            },
+            "B": {
+                "host": "127.0.0.1",
+                "port": 6379,
+                "password": "",
+                "db": "1"
+            }
+        }
+    },
+    "rpc": {
+        "internal": 1,
+        "timeout": 300,
+        "headers": {
+            "Content-Type": "text/json"
+        }
+    },
+    "cmd_line": {
+        "internal": 1,
+        "timeout": 5
+    },
+
+    "dirs": {
+        "R": {
+	    "file_repo":"/home/workspace/test-data",
+	    "tmp_dir":"/home/workspace/robot-tests/tmp"
+	},
+        "S": {
+	    "file_repo":"/home/workspace/go/src/github.com/PPIO/ppio-tests/devops/file_repo/",
+	    "tmp_dir":"/home/workspace/tmp/"
+	}
+    },
+
+    "resource": {
+        "R": {
+	    "file_repo":"/home/workspace/test-data/",
+	    "tmp_dir":"/home/workspace/robot-tests/tmp/",
+            "A": {
+                "gppio": {
+                    "ip": "192.168.50.239",
+                    "port": 8684
+                },
+                "center0": {
+                    "ip": "192.168.50.239",
+                    "port": 18010
+                },
+                "verifier0": {
+                    "ip": "192.168.50.239",
+                    "port": 18040
+                },
+                "indexer0": {
+                    "ip": "192.168.50.240",
+                    "port": 18030
+                },
+                "bootstrap0": {
+                    "ip": "192.168.50.241",
+                    "port": 18020
+                },
+                "cpool": {
+                    "ip": "192.168.50.239",
+                    "port": 10001
+                },
+                "ppio0": {
+                    "ip": "192.168.50.240",
+                    "port": 18060
+                },
+                "ppio1": {
+                    "ip": "192.168.50.240",
+                    "port": 18061
+                },
+                "poss0": {
+                    "ip": "192.168.50.241",
+                    "port": 18060
+                },
+                "poss1": {
+                    "ip": "192.168.50.241",
+                    "port": 18061
+                },
+                "miner0": {
+                    "ip": "192.168.50.233",
+                    "port": 18050,
+                    "account": "ppio1KgqNbxTiNqKyaahLFjSGGfK2WuJNR4HFb"
+                },
+                "miner1": {
+                    "ip": "192.168.50.233",
+                    "port": 18051,
+                    "account": "ppio1QcM4YmKQ55q6NKFT7XR1ek21H3eYWE9zP"
+                },
+                "miner2": {
+                    "ip": "192.168.50.209",
+                    "port": 18052,
+                    "account": "ppio1QkS9abTtBsSCFtMdBqqBFsJsBpcZuyc7q"
+                },
+                "miner3": {
+                    "ip": "192.168.50.209",
+                    "port": 18053,
+                    "account": "ppio1awPPtYeyV1KsDLUuEHKHV9StKGycsg8f9"
+                },
+                "miner4": {
+                    "ip": "192.168.50.209",
+                    "port": 18054,
+                    "account": "ppio1XHf9Pain1hoH11jfDc94K5Z1u4NeEpVdW"
+                },
+                "miner5": {
+                    "ip": "192.168.50.209",
+                    "port": 18055,
+                    "account": "ppio1WjNRLpE1QuiatBZ2fUDpDPkgxGe2Vh6gY"
+                },
+                "miner6": {
+                    "ip": "192.168.50.209",
+                    "port": 18056,
+                    "account": "ppio1Z7UP5ycQT5FQ6vWX1mUPUA5YigVB4LJB5"
+                },
+                "miner7": {
+                    "ip": "192.168.50.209",
+                    "port": 18057,
+                    "account": "ppio1VgkfbAAvhjUuNg7rU7KotMZeoLn84B3xw"
+                },
+                "miner8": {
+                    "ip": "192.168.50.209",
+                    "port": 18058,
+                    "account": "ppio1WZWps34eXr7nWspBJmYLV5SaKu4KBhjhz"
+                },
+                "miner9": {
+                    "ip": "192.168.50.209",
+                    "port": 18059,
+                    "account": "ppio1Wx3tzAFT2LTraofXiHRhUvkw5RbnLdJpf"
+                }
+            },
+            "B": {
+            }
+        },
+        "S": {
+	    "file_repo":"/home/workspace/go/src/github.com/PPIO/ppio-tests/devops/file_repo/",
+	    "tmp_dir":"/home/workspace/tmp/",
+            "A": {
+                "gppio": {
+                    "ip": "127.0.0.1",
+                    "port": 8684
+                },
+                "center0": {
+                    "ip": "127.0.0.1",
+                    "port": 18010
+                },
+                "verifier0": {
+                    "ip": "127.0.0.1",
+                    "port": 18040
+                },
+                "indexer0": {
+                    "ip": "127.0.0.1",
+                    "port": 18030
+                },
+                "bootstrap0": {
+                    "ip": "127.0.0.1",
+                    "port": 18020
+                },
+                "cpool": {
+                    "ip": "127.0.0.1",
+                    "port": 10001
+                },
+                "ppio0": {
+                    "ip": "127.0.0.1",
+                    "port": 18060
+                },
+                "ppio1": {
+                    "ip": "127.0.0.1",
+                    "port": 18061
+                },
+                "poss0": {
+                    "ip": "127.0.0.1",
+                    "port": 18060
+                },
+                "poss1": {
+                    "ip": "127.0.0.1",
+                    "port": 18061
+                },
+                "miner0": {
+                    "ip": "127.0.0.1",
+                    "port": 18050,
+                    "account": "ppio1KgqNbxTiNqKyaahLFjSGGfK2WuJNR4HFb"
+                },
+                "miner1": {
+                    "ip": "127.0.0.1",
+                    "port": 18051,
+                    "account": "ppio1QcM4YmKQ55q6NKFT7XR1ek21H3eYWE9zP"
+                },
+                "miner2": {
+                    "ip": "127.0.0.1",
+                    "port": 18052,
+                    "account": "ppio1QkS9abTtBsSCFtMdBqqBFsJsBpcZuyc7q"
+                },
+                "miner3": {
+                    "ip": "127.0.0.1",
+                    "port": 18053,
+                    "account": "ppio1awPPtYeyV1KsDLUuEHKHV9StKGycsg8f9"
+                },
+                "miner4": {
+                    "ip": "127.0.0.1",
+                    "port": 18054,
+                    "account": "ppio1XHf9Pain1hoH11jfDc94K5Z1u4NeEpVdW"
+                },
+                "miner5": {
+                    "ip": "127.0.0.1",
+                    "port": 18055,
+                    "account": "ppio1WjNRLpE1QuiatBZ2fUDpDPkgxGe2Vh6gY"
+                },
+                "miner6": {
+                    "ip": "127.0.0.1",
+                    "port": 18056,
+                    "account": "ppio1Z7UP5ycQT5FQ6vWX1mUPUA5YigVB4LJB5"
+                },
+                "miner7": {
+                    "ip": "127.0.0.1",
+                    "port": 18057,
+                    "account": "ppio1VgkfbAAvhjUuNg7rU7KotMZeoLn84B3xw"
+                },
+                "miner8": {
+                    "ip": "127.0.0.1",
+                    "port": 18058,
+                    "account": "ppio1WZWps34eXr7nWspBJmYLV5SaKu4KBhjhz"
+                },
+                "miner9": {
+                    "ip": "127.0.0.1",
+                    "port": 18059,
+                    "account": "ppio1Wx3tzAFT2LTraofXiHRhUvkw5RbnLdJpf"
+                }
+            },
+            "B": {
+            }
+        }
+    },
+
+    "default": {
+        "expires": "2019-12-20",
+        "chiprice": "100",
+        "copies": 1,
+        "meta": "",
+	"outfile":"/home/workspace/go/src/github.com/PPIO/ppio-tests/cases/automation/tmp/tmp.file",
+        "encrypt": 1,
+        "sync": true,
+        "task_finish_timeout": 900,
+        "object_available_timeout": 900
+    },
+
+    "operation_time_limit": {
+	"R":
+	{
+            "put":
+            [
+            [90,90,90,90,90,90],
+            [90,90,90,90,90,90],
+            [90,90,90,90,90,90],
+            [90,90,90,90,90,90],
+            [60,300,300,300,300,300]
+            ],
+            "get":
+            [
+            [0,1,3,3,4,5],
+            [0,5,5,5,5,5],
+            [0,8,8,8,8,8],
+            [0,10,10,10,10,10],
+            [0,20,20,20,20,20]
+            ],
+            "delete":
+            [
+            [0,1,3,3,4,5],
+            [0,5,5,5,5,5],
+            [0,8,8,8,8,8],
+            [0,8,8,8,8,8],
+            [0,8,8,8,8,8]
+            ],
+            "copy":
+            [
+            [0,1,3,3,4,5],
+            [0,5,5,5,5,5],
+            [0,8,8,8,8,8],
+            [0,10,10,10,10,10],
+            [0,20,20,20,20,20]
+            ],
+            "renew":
+            [
+            [0,1,3,3,4,5],
+            [0,5,5,5,5,5],
+            [0,8,8,8,8,8],
+            [0,10,10,10,10,10],
+            [0,20,20,20,20,20]
+            ]
+	},
+	"S":
+	{
+            "put":
+            [
+            [90,90,90,90,90,90],
+            [90,90,90,90,90,90],
+            [90,90,90,90,90,90],
+            [90,90,90,90,90,90],
+            [0,300,300,300,300,300]
+            ],
+            "get":
+            [
+            [0,1,3,3,4,5],
+            [0,5,5,5,5,5],
+            [0,8,8,8,8,8],
+            [0,10,10,10,10,10],
+            [0,20,20,20,20,20]
+            ],
+            "delete":
+            [
+            [0,1,3,3,4,5],
+            [0,5,5,5,5,5],
+            [0,8,8,8,8,8],
+            [0,8,8,8,8,8],
+            [0,8,8,8,8,8]
+            ],
+            "copy":
+            [
+            [0,1,3,3,4,5],
+            [0,5,5,5,5,5],
+            [0,8,8,8,8,8],
+            [0,10,10,10,10,10],
+            [0,20,20,20,20,20]
+            ],
+            "renew":
+            [
+            [0,1,3,3,4,5],
+            [0,5,5,5,5,5],
+            [0,8,8,8,8,8],
+            [0,10,10,10,10,10],
+            [0,20,20,20,20,20]
+            ]
+	}
+    }
+}
