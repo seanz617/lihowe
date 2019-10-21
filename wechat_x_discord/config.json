@@ -1,0 +1,50 @@
+{
+    "mysql": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "user": "root",
+        "password": "123...qA",
+        "db": "message_transfer"
+    },
+    "discord": {
+        "token": "NTc0NTI5Nzc1NzA4Nzk4OTkx.XM-atA.lP2taFVODPp6bCF_IgvxG5adJDc",
+        "channels": [
+            "test-test",
+            "\u95f2\u804a-chat",
+            "wechat"
+        ]
+    },
+    "wechat": {
+        "chatrooms": [
+            "PPIO_W=",
+            "test_chat",
+            "PPLabs\u516c\u53f8\u7fa4",
+            "PPLabs_Discord"
+        ]
+    },
+    "message_mapping": {
+        "discord": {
+            "test-test": [
+                "PPIO_W="
+            ],
+            "\u95f2\u804a-chat": [
+                "PPLabs\u516c\u53f8\u7fa4"
+            ],
+            "wechat": [
+                "PPLabs_Discord"
+            ]
+        },
+        "wechat": {
+            "PPIO_W=": [
+                "test-test"
+            ],
+            "test_chat": [],
+            "PPLabs\u516c\u53f8\u7fa4": [
+                "\u95f2\u804a-chat"
+            ],
+            "PPLabs_Discord": [
+                "wechat"
+            ]
+        }
+    }
+}
