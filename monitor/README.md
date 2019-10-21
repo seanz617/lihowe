@@ -4,7 +4,7 @@
 - 云主机封SSH，监控由拉数据转为被动接收数据（推）
 
 ## 2. 设计
-![Alt text](./archive.jpg)
+![Alt text](./static/archive.jpg)
 
 ### 1. client上报数据到server
 ```bash
