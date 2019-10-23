@@ -1,17 +1,17 @@
 var enfi_cloud = require('./enfi_cloud');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-var exec = require('child_process').exec;
 
 describe('ENFI Compatibility Test', function () {
     this.timeout(3600000);
 
-    before(function () {
-        return enfi_cloud.run();
+    before(async function () {
+        await enfi_cloud.update_pcdn('https://pcdn-release.oss-cn-shanghai.aliyuncs.com/cmd_pcdn_windows_v0.5.19.exe');
+        return await enfi_cloud.run();
     });
 
     after(async function () {
-        await enfi_cloud.snap_shot("end.png");
+        //await enfi_cloud.snap_shot("end.png");
         return await enfi_cloud.quit();
     });
 
