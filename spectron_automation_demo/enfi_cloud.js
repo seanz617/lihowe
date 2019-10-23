@@ -1,5 +1,6 @@
 var electronPath = require("electron");
 var Application = require('spectron').Application;
+var execSync = require('child_process').execSync;
 var assert = require('assert');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
@@ -7,7 +8,7 @@ const chaiAsPromised = require('chai-as-promised');
 chai.should();
 chai.use(chaiAsPromised);
 
-var exepath = 'D:\\Program Files\\enfi-cloud-desktop\\ENFI下载器.exe';
+var exepath = 'D:\\enfi-cloud-desktop\\ENFI下载器.exe';
 
 var enfi_cloud = {
 
@@ -52,6 +53,24 @@ var enfi_cloud = {
         await this.sleep(1000);
     },
 
+    update_pcdn: async function(url) {
+        //execSync('del \'D:\\Program Files\\enfi-cloud-desktop\\resources\\extraResources\\pcdn_win.exe\'' +
+        execSync('del D:\\enfi-cloud-desktop\\resources\\extraResources\\pcdn_win.exe' +
+            function (error, stdout, stderr) {
+                if (error !== null) {
+                    console.log('exec error: ' + error+stdout+stderr);
+                }
+            });
+        //  && copy pcdn_win.exe ',
+        //execSync('wget '+url+'-O \'D:\\Program Files\\enfi-cloud-desktop\\resources\\extraResources\\pcdn_win.exe\'',
+        execSync('wget '+url+' -O D:\\enfi-cloud-desktop\\resources\\extraResources\\pcdn_win.exe',
+            function (error, stdout, stderr) {
+                if (error !== null) {
+                    console.log('exec error: ' + error);
+                }
+            });
+    },
+
     run: function() {
         this.app = new Application({
             path:exepath,
@@ -74,15 +93,18 @@ var enfi_cloud = {
             await this.sleep(6000);
 
             var progress = 0.0;
-            await this.app.client.getText('/html/body/div[1]/div/div/div[2]/div/div[1]/div[1]/div[2]/div[1]/div/div[2]/div/div/ul/li/div/div[1]/div[3]/span[2]').then(function(value){
-                console.log("progress: "+value);
-                if(isNaN(value)){
-                    value = 0.0;
+            progress = await this.app.client.getText('/html/body/div[1]/div/div/div[2]/div/div[1]/div[1]/div[2]/div[1]/div/div[2]/div/div/ul/li/div/div[1]/div[3]/span[2]').then(function(value){
+                console.log('progress:'+value);
+                var jindu = parseFloat(value);
+                if(isNaN(jindu)){
+                    jindu = 0.0;
                 }
-                progress = parseFloat(value);
+                return jindu;
             });
 
-            if(progress > 5 && !pause_flag){
+            console.log('progress:'+progress)
+
+            if(progress > 1 && pause_flag == false){
                 pause_flag = true;
 
                 await this.sleep(3000);
@@ -104,7 +126,7 @@ var enfi_cloud = {
             if(exist_flag){
                 var text_ret = await this.app.client.getText('/html/body/div[1]/div/div/div[2]/div/div[1]/div[1]/div[2]/div[1]/div/div[2]/div/div/ul/li[1]/div/div[1]/div[1]/div/span').then(function (text) {
                     console.log(text);
-                    if(text == '正在开始 ...' || text == '下载失败'){
+                    if(text == '正在开始 ...' || text == '下载失败' || text=='已暂停'){
                         console.log('download fail');
                         return false;
                     }
@@ -262,20 +284,13 @@ var enfi_cloud = {
         await this.sleep(30000);
         await this.app.client.setValue('//*[@id="app"]/div/textarea','magnet:?xt=urn:btih:DBF21FC9A28D7C292B5CD9462683A1E150D4E0E3&dn=John.Wick.3.2019.HDRip.XviD.AC3-EVO&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.pirateparty.gr%3A6969%2Fannounce&tr=udp%3A%2F%2Fopen.demonii.si%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.iamhansen.xyz%3A2000%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2710%2Fannounce&tr=udp%3A%2F%2Fdenis.stalker.upeer.me%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Fipv4.tracker.harry.lu%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&tr=udp%3A%2F%2Fexplodie.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.zer0day.to%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fcoppersurfer.tk%3A6969%2Fannounce');
         await this.sleep(10000);
-
         await this.switch_to_window('ENFI-cloud');
         await this.app.client.click('button*=开始下载');
         await this.sleep(10000);
         await this.app.client.click('button*=极速下载');
-        await this.sleep(3000);
+        await this.sleep(10000);
 
-        await this.app.client.getText('/html/body/div[1]/div/div/div[2]/div/div[1]/div[1]/div[2]/div[1]/div/div[2]/div/div/ul/li/div/div[1]/div[3]/span[2]').then(function(value){
-            console.log("progress: "+value)
-        });
-
-        await this.sleep(3000);
-
-        var ret = await this.check_download_speed(1800000);
+        var ret = await this.check_download_speed(30000);
 
         if(!ret){
             await this.app.client.click('/html/body/div[1]/div/div/div[2]/div/div[1]/div[1]/div[2]/div[1]/div/div[2]/div/div/ul/li/div/div[2]/button[2]').then(function(){
