@@ -1,0 +1,10 @@
+[proxy server]
+192.168.0.1:18071=127.0.0.1
+192.168.0.2:18071=127.0.0.4
+[stun server]
+stun0=127.0.0.2
+stun1=127.0.0.3
+[video address]
+localhost 1 = test.mp4
+localhost 2 = nwn.mp4
+oss file = https://pplabstestfiles.oss-cn-shanghai.aliyuncs.com/cdntest/test.mp4
