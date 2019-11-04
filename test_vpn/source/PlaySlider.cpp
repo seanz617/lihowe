@@ -32,7 +32,9 @@ void PlaySlider::OnLButtonUp(UINT nFlags, CPoint point)
 
 afx_msg LRESULT PlaySlider::OnChangePlayPos(WPARAM wParam, LPARAM lParam)
 {
-	if((user_flag && lParam != NULL) || !user_flag)
+	if ((user_flag && lParam != NULL) || !user_flag)
+	{
 		SetPos(wParam);
+	}
 	return 0;
 }

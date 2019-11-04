@@ -42,6 +42,9 @@
     <ClInclude Include="HttpHandler.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ShellHandler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCApplication1.cpp">
@@ -63,6 +66,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="HttpHandler.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ShellHandler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

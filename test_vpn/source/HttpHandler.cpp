@@ -116,13 +116,13 @@ void HttpHandler::GetCityAndIsp(CString ip,CString& city,CString& isp)
 	}
 }
 
-void HttpHandler::GetExternalIP(CString& ip)
+void HttpHandler::GetExternalIP(CString& ip,CString url)
 {
 	CInternetSession* pis = NULL;
 	CHttpFile* phf = NULL;
 
 	ip = _T("");
-	if (Send(&pis, &phf, _T("http://ipinfo.io/ip")))
+	if (Send(&pis, &phf, url))
 	{
 		int numread = 0;
 		char buf[64] = { 0 };
