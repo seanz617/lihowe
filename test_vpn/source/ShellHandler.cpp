@@ -44,7 +44,7 @@ UINT RunCmd(LPVOID pParam)
 		CloseHandle(hRead);
 
 		GetExitCodeProcess(pi.hProcess, &(psh->ret_code));
-		
+
 		psh->call_wnd->SendMessage(psh->callback_msg,0,NULL);
 
 		return psh->ret_code;
@@ -71,3 +71,39 @@ DWORD ShellHandler::Run(CString pApp, CString pCmdline, CWnd* pWnd, UINT pMsg)
 	
 	return ret_code;
 }
+
+BOOL ShellHandler::ParseJson(CMap<CString, LPCTSTR, CString, LPCTSTR>& mapContent, CString msgJson)
+{
+	CStringArray strArray;
+	CString strTemp = msgJson;
+
+	strTemp.Remove('"');
+	strTemp.Remove('{');
+	strTemp.Remove('}');
+	int strTempLength = strTemp.GetLength();
+
+	int index = 0;
+	while (true) {
+		index = strTemp.Find(',');
+		if (-1 == index) {
+			strArray.Add(strTemp);
+			break;
+		}
+		strArray.Add(strTemp.Left(index));
+		strTemp = strTemp.Right(strTemp.GetLength() - index - 1);
+	}
+	int length = strArray.GetSize();
+	CString strMap;
+	int subIndex = 0;
+	CString strKey("");
+	CString strValue("");
+	for (int i = 0; i < length; i++) {
+		strMap = strArray.GetAt(i);
+		subIndex = strMap.Find(':');
+		strKey = strMap.Left(subIndex);
+		strValue = strMap.Right(strMap.GetLength() - subIndex - 1);
+		mapContent.SetAt(strKey, strValue);
+	}
+	return TRUE;
+}
+
