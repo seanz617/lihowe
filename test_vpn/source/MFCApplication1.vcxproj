@@ -192,6 +192,7 @@
     <ClInclude Include="HttpHandler.h" />
     <ClInclude Include="MFCApplication1.h" />
     <ClInclude Include="MFCApplication1Dlg.h" />
+    <ClInclude Include="MyTool.h" />
     <ClInclude Include="PlaySlider.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShellHandler.h" />
@@ -199,11 +200,13 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestReport.h" />
     <ClInclude Include="TestSettings.h" />
+    <ClInclude Include="TestWget.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HttpHandler.cpp" />
     <ClCompile Include="MFCApplication1.cpp" />
     <ClCompile Include="MFCApplication1Dlg.cpp" />
+    <ClCompile Include="MyTool.cpp" />
     <ClCompile Include="PlaySlider.cpp" />
     <ClCompile Include="ShellHandler.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -214,6 +217,7 @@
     </ClCompile>
     <ClCompile Include="TestReport.cpp" />
     <ClCompile Include="TestSettings.cpp" />
+    <ClCompile Include="TestWget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MFCApplication1.rc" />
