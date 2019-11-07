@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "MyTool.h"
 
-
 MyTool::MyTool()
 {
 }

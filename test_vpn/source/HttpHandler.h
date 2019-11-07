@@ -1,7 +1,6 @@
 #pragma once
 #include <afxinet.h>
 
-
 class HttpHandler
 {
 public:
@@ -13,5 +12,7 @@ public:
 
 	void GetExternalIP(CString& ip, CString url);
 	void GetCityAndIsp(CString ip,CString& city,CString& isp);
+
+	//static BOOL DownloadFile(CString serverName, CString objectName, CString path);
 };
 
